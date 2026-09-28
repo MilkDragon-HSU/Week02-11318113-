@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>極簡設計師個人名片 | Minimalist Designer Card</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QRCode JS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        monodark: '#09090b',
+                        monocard: '#121215',
+                        monoborder: '#27272a',
+                    },
+                    keyframes: {
+                        pulseSlow: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.3 },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: 0, transform: 'scale(0.96) translateY(8px)' },
+                            '100%': { opacity: 1, transform: 'scale(1) translateY(0)' },
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulseSlow 2.5s infinite ease-in-out',
+                        'fade-in': 'fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Base Background Pattern with 0.4s smooth transition */
+        body {
+            background-color: #f4f4f5;
+            color: #09090b;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+            background-size: 24px 24px;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark {
+            background-color: #09090b;
+            color: #f4f4f5;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+        }
+
+        /* Perspective 3D Tilt Container */
+        .card-perspective {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Smooth Theme Transitions for Inner Elements */
+        .card-text-primary,
+        .card-text-muted,
+        .card-bg-pill,
+        .btn-primary,
+        .btn-secondary {
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Corner Crosshair Swiss Design Accent */
+        .corner-cross {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .corner-cross::before, .corner-cross::after {
+            content: '';
+            position: absolute;
+            background-color: #52525b;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .corner-cross::before {
+            top: 4px;
+            left: 0;
+            width: 10px;
+            height: 1px;
+        }
+        .corner-cross::after {
+            top: 0;
+            left: 4px;
+            width: 1px;
+            height: 10px;
+        }
+
+        /* Light Mode Specific Overrides */
+        body:not(.dark) .card-inner {
+            background-color: #ffffff !important;
+            border-color: #e4e4e7 !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        body:not(.dark) .card-text-primary {
+            color: #09090b !important;
+        }
+
+        body:not(.dark) .card-text-muted {
+            color: #52525b !important;
+        }
+
+        body:not(.dark) .card-bg-pill {
+            background-color: #f4f4f5 !important;
+            border-color: #e4e4e7 !important;
+            color: #18181b !important;
+        }
+
+        body:not(.dark) .btn-primary {
+            background-color: #09090b !important;
+            color: #ffffff !important;
+            border-color: #09090b !important;
+        }
+
+        body:not(.dark) .btn-primary:hover {
+            background-color: #27272a !important;
+            border-color: #27272a !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        body:not(.dark) .btn-secondary {
+            background-color: #f4f4f5 !important;
+            border-color: #e4e4e7 !important;
+            color: #18181b !important;
+        }
+
+        body:not(.dark) .btn-secondary:hover {
+            background-color: #e4e4e7 !important;
+            color: #000000 !important;
+        }
+
+        body:not(.dark) .corner-cross::before,
+        body:not(.dark) .corner-cross::after {
+            background-color: #a1a1aa;
+        }
+
+        body:not(.dark) #toast {
+            background-color: #09090b;
+            color: #ffffff;
+            border-color: #27272a;
+        }
+
+        /* Button Ripple Effect Styles */
+        button, .btn-primary, .btn-secondary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-element {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-animation 0.55s cubic-bezier(0.2, 0.8, 0.25, 1);
+            background-color: rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        body:not(.dark) .ripple-element {
+            background-color: rgba(0, 0, 0, 0.18);
+        }
+
+        body.dark .btn-primary .ripple-element {
+            background-color: rgba(0, 0, 0, 0.25);
+        }
+
+        body:not(.dark) .btn-primary .ripple-element {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(3.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="dark min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 select-none overflow-x-hidden transition-all duration-400 ease-in-out">
+
+    <!-- Fixed Top Bar / Theme Switcher -->
+    <header class="fixed top-5 right-5 z-40">
+        <button id="theme-toggle-btn" onclick="toggleTheme()" class="px-3.5 py-2 rounded-full bg-zinc-900/90 dark:bg-zinc-900/90 text-zinc-100 dark:text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2 group">
+            <i id="theme-icon" data-lucide="sun" class="w-4 h-4 text-amber-400 transition-transform duration-500 group-hover:rotate-45"></i>
+            <span id="theme-text" class="font-mono text-xs font-medium uppercase tracking-wider">Light Mode</span>
+        </button>
+    </header>
+
+    <!-- Main Center Layout Container -->
+    <main class="w-full max-w-md card-perspective my-auto">
+        
+        <!-- High Contrast Card Component -->
+        <div id="card" class="card-inner relative bg-monocard border border-monoborder rounded-2xl p-5 sm:p-7 shadow-2xl backdrop-blur-2xl overflow-hidden group">
+            
+            <!-- Corner Crosshair Anchors -->
+            <div class="corner-cross top-3 left-3"></div>
+            <div class="corner-cross top-3 right-3"></div>
+            <div class="corner-cross bottom-3 left-3"></div>
+            <div class="corner-cross bottom-3 right-3"></div>
+
+            <div class="flex flex-col items-center text-center relative z-10">
+                
+                <!-- Avatar & Status Section (Embedded Data URI Image) -->
+                <div class="flex flex-col items-center mb-3">
+                    <div class="relative group/avatar cursor-pointer mb-2.5" onclick="triggerAvatarAnimation()" title="Click for interaction">
+                        <div class="w-20 h-20 sm:w-22 sm:h-22 rounded-full p-0.5 bg-gradient-to-b from-zinc-200 via-zinc-600 to-zinc-900 transition-transform duration-500 group-hover/avatar:scale-105 shadow-lg">
+                            <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden relative border border-zinc-800">
+                                <!-- Direct Embedded Vector Avatar (Will display everywhere without missing file issues) -->
+                                <img id="avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 650' width='100%' height='100%'><rect width='100%' height='100%' fill='white'/><path d='M 130,450 C 130,420 180,410 250,410 C 320,410 370,420 370,450 L 390,580 C 390,620 110,620 110,580 Z' fill='%231f1f23'/><path d='M 210,410 L 250,470 L 290,410 L 320,410 L 270,500 L 230,500 L 180,410 Z' fill='%23ffffff'/><polygon points='240,460 260,460 265,560 235,560' fill='%23000000'/><path d='M 140,230 C 130,150 160,110 250,110 C 340,110 370,150 360,230 C 360,330 380,360 380,420 C 380,480 320,520 250,520 C 180,520 120,480 120,420 C 120,360 140,330 140,230 Z' fill='%23ffd400' stroke='%23000000' stroke-width='10' stroke-linejoin='round'/><path d='M 180,115 C 160,115 155,140 165,150 C 185,150 200,125 180,115 Z' fill='%23ffd400' stroke='%23000000' stroke-width='8'/><path d='M 320,115 C 340,115 345,140 335,150 C 315,150 300,125 320,115 Z' fill='%23ffd400' stroke='%23000000' stroke-width='8'/><ellipse cx='195' cy='250' rx='65' ry='70' fill='white' stroke='%23000000' stroke-width='10'/><ellipse cx='305' cy='250' rx='65' ry='70' fill='white' stroke='%23000000' stroke-width='10'/><line x1='180' y1='245' x2='215' y2='240' stroke='%23000000' stroke-width='9' stroke-linecap='round'/><line x1='285' y1='240' x2='320' y2='245' stroke='%23000000' stroke-width='9' stroke-linecap='round'/><path d='M 190,380 C 190,340 310,340 310,380 C 310,430 190,430 190,380 Z' fill='%23e62e00' stroke='%23000000' stroke-width='9'/><path d='M 228,348 L 228,368 C 228,373 236,373 236,368 L 236,348 Z' fill='white' stroke='%23000000' stroke-width='5'/><path d='M 264,348 L 264,368 C 264,373 272,373 272,368 L 272,348 Z' fill='white' stroke='%23000000' stroke-width='5'/></svg>" alt="徐楷喬的大頭照" class="w-full h-full object-cover transition-all duration-500 group-hover/avatar:scale-110">
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-0.5 -right-0.5 bg-white text-black p-1 rounded-full border border-black shadow-md">
+                            <i data-lucide="sparkles" class="w-3 h-3 text-black"></i>
+                        </div>
+                    </div>
+
+                    <!-- Name & Job Title -->
+                    <h1 class="card-text-primary text-xl sm:text-2xl font-bold tracking-tight text-white font-sans uppercase mb-0.5">
+                        徐楷喬
+                    </h1>
+                    <p class="card-text-muted text-[11px] font-mono text-zinc-400 tracking-wider uppercase mb-2">
+                        Lead UI/UX & Brand Architect
+                    </p>
+
+                    <!-- Status Pill -->
+                    <div class="card-bg-pill inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-zinc-800/80 bg-zinc-900/80 text-[10px] font-mono tracking-widest uppercase text-zinc-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-slow"></span>
+                        <span>Available for Hire</span>
+                    </div>
+                </div>
+
+                <!-- Concise Bio, Location & Skills Section -->
+                <div class="w-full border-t border-b border-zinc-800/60 py-3 mb-4 space-y-2">
+                    <p class="card-text-muted text-xs text-zinc-400 leading-relaxed font-sans max-w-xs mx-auto">
+                        專注於極簡主義視覺系統、使用者體驗設計與高效能數位產品架構。
+                    </p>
+                    
+                    <div class="flex items-center justify-center gap-1 text-zinc-400 font-mono text-[10px] uppercase tracking-wider">
+                        <i data-lucide="map-pin" class="w-3 h-3 text-zinc-400"></i>
+                        <span>TAICHUNG / TAIPEI, TAIWAN</span>
+                    </div>
+
+                    <!-- Capabilities Badges -->
+                    <div class="flex flex-wrap justify-center gap-1 pt-0.5">
+                        <span class="card-bg-pill px-2 py-0.5 text-[9px] font-mono border border-zinc-800/80 rounded bg-zinc-900/60 text-zinc-400">UI/UX</span>
+                        <span class="card-bg-pill px-2 py-0.5 text-[9px] font-mono border border-zinc-800/80 rounded bg-zinc-900/60 text-zinc-400">Design System</span>
+                        <span class="card-bg-pill px-2 py-0.5 text-[9px] font-mono border border-zinc-800/80 rounded bg-zinc-900/60 text-zinc-400">Brand Identity</span>
+                        <span class="card-bg-pill px-2 py-0.5 text-[9px] font-mono border border-zinc-800/80 rounded bg-zinc-900/60 text-zinc-400">Frontend Dev</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Section -->
+                <div class="w-full space-y-2 mb-3">
+                    <!-- Primary Call to Action -->
+                    <button onclick="openContactModal()" class="btn-primary w-full py-2.5 px-4 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest rounded-xl border border-white flex items-center justify-center gap-2 transition-all duration-300 hover:bg-zinc-200 cursor-pointer group/btn">
+                        <span>Get In Touch</span>
+                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5"></i>
+                    </button>
+
+                    <!-- Compact Secondary Actions Grid -->
+                    <div class="grid grid-cols-3 gap-1.5 w-full">
+                        <a href="https://www.instagram.com/da_da_11.19?stkn=cjllc2ltdmNhOThh&utm_source=qr" target="_blank" rel="noopener noreferrer" onclick="showToast('前往 Instagram...')" class="btn-secondary py-2 px-1 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white font-mono text-[10px] rounded-xl border border-zinc-800 flex items-center justify-center text-center gap-1 transition-all cursor-pointer group/ig whitespace-nowrap" title="Instagram">
+                            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5.5" ry="5.5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-width="2.5"></line>
+                            </svg>
+                            <span class="uppercase text-center">Instagram</span>
+                        </a>
+                        <button onclick="copyEmail('louie2022cat@gmail.com')" class="btn-secondary py-2 px-2 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white font-mono text-[10px] rounded-xl border border-zinc-800 flex items-center justify-center text-center gap-1 transition-colors cursor-pointer" title="Copy Email">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span class="text-center">Email</span>
+                        </button>
+                        <button onclick="toggleQRModal()" class="btn-secondary py-2 px-2 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white font-mono text-[10px] rounded-xl border border-zinc-800 flex items-center justify-center text-center gap-1 transition-colors cursor-pointer" title="QR Code">
+                            <i data-lucide="qr-code" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span class="text-center">QR</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="flex items-center justify-center gap-4 pt-3 border-t border-zinc-800/60 w-full text-zinc-500">
+                    <a href="#" onclick="event.preventDefault(); showToast('Connecting to Dribbble...')" class="hover:text-white transition-colors p-1" title="Dribbble">
+                        <i data-lucide="dribbble" class="w-3.5 h-3.5"></i>
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); showToast('Connecting to GitHub...')" class="hover:text-white transition-colors p-1" title="GitHub">
+                        <i data-lucide="github" class="w-3.5 h-3.5"></i>
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); showToast('Connecting to LinkedIn...')" class="hover:text-white transition-colors p-1" title="LinkedIn">
+                        <i data-lucide="linkedin" class="w-3.5 h-3.5"></i>
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); showToast('Connecting to Twitter/X...')" class="hover:text-white transition-colors p-1" title="Twitter/X">
+                        <i data-lucide="twitter" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer Copyright Text -->
+        <p class="text-center font-mono text-[10px] text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mt-4">
+            © 2026 徐楷喬 • SWISS MONOCHROME
+        </p>
+    </main>
+
+    <!-- Contact Form Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-sm relative animate-fade-in shadow-2xl">
+            <div class="flex items-center justify-between pb-4 border-b border-zinc-800 mb-4">
+                <h3 class="font-mono text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4 text-white"></i>
+                    Contact Designer
+                </h3>
+                <button onclick="closeContactModal()" class="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleFormSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Your Name</label>
+                    <input type="text" required placeholder="e.g. Alex Morgan" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Your Email</label>
+                    <input type="email" required placeholder="alex@company.com" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-mono text-zinc-400 uppercase mb-1">Project Message</label>
+                    <textarea rows="3" required placeholder="Tell me about your project or idea..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white transition-colors resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-white text-black font-mono text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-zinc-200 transition-colors mt-2 cursor-pointer">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qr-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-xs text-center relative animate-fade-in shadow-2xl">
+            <button onclick="toggleQRModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white p-1 cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            
+            <h3 class="font-mono text-xs uppercase tracking-wider text-zinc-300 mb-4">Instagram QR Code</h3>
+            
+            <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-inner overflow-hidden">
+                <div id="qrcode-container" class="w-40 h-40 flex items-center justify-center"></div>
+            </div>
+
+            <p class="font-mono text-[11px] text-zinc-400">掃描 QR Code 前往 Instagram 個人主頁</p>
+        </div>
+    </div>
+
+    <!-- Custom Message Dialog Box -->
+    <div id="msg-dialog" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-xs text-center relative animate-fade-in shadow-2xl">
+            <div class="w-12 h-12 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-3 border border-zinc-700">
+                <i data-lucide="check" class="w-6 h-6 text-white"></i>
+            </div>
+            <h3 id="msg-dialog-title" class="font-mono text-sm font-bold uppercase tracking-wider text-white mb-1">已複製完成</h3>
+            <p id="msg-dialog-desc" class="font-mono text-[11px] text-zinc-400 mb-5 break-all">louie2022cat@gmail.com</p>
+            <button onclick="closeMsgDialog()" class="w-full py-2.5 bg-white text-black font-mono text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-zinc-200 transition-colors cursor-pointer">
+                確定
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification System -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white text-black font-mono text-xs px-4 py-2.5 rounded-full shadow-2xl border border-zinc-300 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50 flex items-center gap-2">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-black"></i>
+        <span id="toast-message">Notification Message</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        lucide.createIcons();
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            if (isDark) {
+                themeIcon.setAttribute('data-lucide', 'sun');
+                themeIcon.className = 'w-4 h-4 text-amber-400 transition-transform duration-500 group-hover:rotate-45';
+                if (themeText) themeText.textContent = 'Light Mode';
+                showToast('切換至暗色模式 (Dark Mode)');
+            } else {
+                themeIcon.setAttribute('data-lucide', 'moon');
+                themeIcon.className = 'w-4 h-4 text-indigo-600 transition-transform duration-500 group-hover:-rotate-12';
+                if (themeText) themeText.textContent = 'Dark Mode';
+                showToast('切換至亮色模式 (Light Mode)');
+            }
+            lucide.createIcons();
+        }
+
+        const card = document.getElementById('card');
+        let cardBounds;
+
+        function handleMouseMove(e) {
+            if (!cardBounds) cardBounds = card.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const leftX = mouseX - cardBounds.x;
+            const topY = mouseY - cardBounds.y;
+            const center = {
+                x: leftX - cardBounds.width / 2,
+                y: topY - cardBounds.height / 2
+            };
+            
+            const rotateX = (center.y / (cardBounds.height / 2)) * -5;
+            const rotateY = (center.x / (cardBounds.width / 2)) * 5;
+
+            card.style.transform = `scale3d(1.015, 1.015, 1.015) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }
+
+        card.addEventListener('mouseenter', () => {
+            cardBounds = card.getBoundingClientRect();
+            document.addEventListener('mousemove', handleMouseMove);
+        });
+
+        card.addEventListener('mouseleave', () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            card.style.transform = 'scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg)';
+        });
+
+        function openContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleQRModal() {
+            const modal = document.getElementById('qr-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                initQRCode();
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function initQRCode() {
+            const container = document.getElementById('qrcode-container');
+            if (!container || container.dataset.rendered === "true") return;
+            
+            container.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(container, {
+                    text: "https://www.instagram.com/da_da_11.19?stkn=cjllc2ltdmNhOThh&utm_source=qr",
+                    width: 160,
+                    height: 160,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+                container.dataset.rendered = "true";
+            }
+        }
+
+        function openMsgDialog(title, desc) {
+            const modal = document.getElementById('msg-dialog');
+            document.getElementById('msg-dialog-title').textContent = title;
+            document.getElementById('msg-dialog-desc').textContent = desc;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeMsgDialog() {
+            const modal = document.getElementById('msg-dialog');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            }, 2500);
+        }
+
+        function copyEmail(emailText) {
+            const tempInput = document.createElement('input');
+            tempInput.value = emailText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                openMsgDialog('已複製完成', emailText);
+            } catch (err) {
+                showToast('複製失敗');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            closeContactModal();
+            showToast('Message successfully sent!');
+            event.target.reset();
+        }
+
+        function triggerAvatarAnimation() {
+            const avatar = document.getElementById('avatar-img');
+            if (avatar) {
+                avatar.classList.add('rotate-[360deg]');
+                setTimeout(() => {
+                    avatar.classList.remove('rotate-[360deg]');
+                }, 600);
+            }
+            showToast('徐楷喬 Profile Verified');
+        }
+
+        document.addEventListener('click', function (e) {
+            const button = e.target.closest('button, .btn-primary, .btn-secondary');
+            if (!button) return;
+
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+            const rect = button.getBoundingClientRect();
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${e.clientX - rect.left - radius}px`;
+            circle.style.top = `${e.clientY - rect.top - radius}px`;
+            circle.classList.add('ripple-element');
+
+            const existing = button.querySelector('.ripple-element');
+            if (existing) existing.remove();
+
+            button.appendChild(circle);
+
+            circle.addEventListener('animationend', () => {
+                circle.remove();
+            });
+        });
+    </script>
+</body>
+</html>
